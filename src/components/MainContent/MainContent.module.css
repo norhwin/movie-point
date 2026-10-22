@@ -1,0 +1,89 @@
+.container{ 
+    width: min(1100px, calc(100% - 40px));
+    margin: 0 auto;
+    flex-direction: column;
+
+}
+.background {
+  display: flow-root;      
+  background: #0b152e;
+  overflow-x: clip;
+  position: relative;     
+  isolation: isolate;
+}
+
+.upCarousel{
+    position: relative;
+    margin-top: -400px;
+    z-index: 3;
+}
+
+
+
+
+.background::before {
+  content: "";
+  position: absolute;
+  top: 1000px;
+  left: 200px;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, #ff4701, transparent 70%);
+  filter: blur(40px);
+  z-index: -1;             /* под содержимым секции */
+  pointer-events: none;
+}
+
+.splashLeft,
+.splashRight{
+position: absolute;
+opacity: 0.2;
+width: 300px;
+z-index: -1;
+pointer-events: none;
+}
+
+
+.spotlightThisMonth{
+  margin-top: 85px;
+  position: relative;
+
+}
+
+
+.splashLeft{
+  left: -150px;
+  top: -40px
+}
+
+.splashRight{
+  bottom: 25px;
+  right: -75px;
+  transform: rotate(180deg);
+
+}
+
+
+.carouselWrap {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.4s, opacity 0.4s;
+}
+.carouselWrap.hidden {
+  grid-template-rows: 0fr;
+  opacity: 0;
+
+}
+.carouselInner {
+ 
+  min-height: 0;  
+}
+
+
+@media (max-width: 700px){
+  .upCarousel{
+    position: relative;
+    margin-top: 0;
+    z-index: 3;
+  }
+}

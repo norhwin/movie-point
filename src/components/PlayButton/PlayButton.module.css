@@ -1,0 +1,57 @@
+.playBtn {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 84px;
+  height: 84px;
+
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  background-color: aqua;
+}
+
+.playCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 66px;
+  height: 66px;
+
+  border: 3px solid var(--play-color);
+  border-radius: 50%;
+
+  color: var(--play-color);
+  font-size: 27px;
+  background-color: bisque;
+}
+
+.rotatingArc {
+  position: absolute;
+  inset: 0;
+
+  border: 3px solid transparent;
+  border-top-color: var(--play-color);
+  border-radius: 50%;
+
+  opacity: 0;
+  transition: opacity 0.4s ease;
+
+  animation: rotateArc 4s linear infinite;
+  animation-play-state: paused;
+}
+
+@keyframes rotateArc {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.playBtn:hover .rotatingArc {
+  opacity: 1;
+  animation-play-state: running;
+}

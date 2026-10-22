@@ -1,0 +1,13 @@
+.head{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid rgba(112, 103, 110, 0.363);
+    margin-bottom: 40px;
+    color: #fff;
+    
+}
+.title {
+  font-size: 26px;
+
+}

@@ -1,0 +1,147 @@
+.section {
+    width: 100%;
+}
+.tabs{
+    display: flex;
+
+    gap:clamp(12px,3vw,42px);
+    flex-wrap:wrap;
+   
+    
+}
+.tab,
+.tabActive{
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    outline: 0;
+    color: #fff;
+
+    padding:10px 0;
+    font-size:13px;
+    font-weight:600;
+    white-space:nowrap;
+    
+}
+
+.tab:hover { 
+    color:#ff496f;
+ }
+
+
+
+.tabActive {
+    color:#ff496f;
+    border-bottom-color:#ff496f;
+     }
+
+.content{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    color: #fff
+
+}
+.cardsFilm{
+    display: grid;
+    grid-template-columns:repeat(4,minmax(0,180px)); /* 3 колонки по 180 px */
+    gap: 40px 24px;
+    justify-content: center;
+  
+}
+
+.cardsFilm > * {
+    animation: showFilm 0.4s ease;
+}
+
+@keyframes showFilm {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(1.2) rotate(2deg);
+        
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0);
+    }
+}
+
+.btnMore{
+    border: none;
+
+    background-color: rgb(138, 134, 127);
+
+    border-radius: 50%;
+    width: 75px;
+    height: 75px;
+    
+
+    margin-top:32px;
+    color:#fff;
+    background:#e63360;
+    border:1px solid #ff6384;
+    font-size:12px;
+    font-weight:700;
+    box-shadow:0 10px 25px #0005;
+
+    transition: transform 0.2s ease;
+}
+
+.btnMore:hover{
+    transform: scale(1.05);
+    color: #fff;
+    border-color: #b3a7a7;
+    border-radius: 40%; 
+
+    background:#f64a73;
+}
+
+
+
+@media(max-width:850px){.cardsFilm{grid-template-columns:repeat(3,minmax(0,180px));gap:30px 16px;} }
+@media(max-width:600px){.cardsFilm{grid-template-columns:repeat(2,minmax(0,180px));gap:24px 12px;} }
+
+.cardAppear {
+  opacity: 0;
+  animation: cardReveal 0.45s ease forwards;
+}
+
+@keyframes cardReveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cardAppear {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+.cardDisappear {
+  animation: cardHide 0.45s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes cardHide {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+}

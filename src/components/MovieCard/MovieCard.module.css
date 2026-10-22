@@ -1,0 +1,60 @@
+.cardMovie {
+  width: 100%;                 /* ширину задаёт сетка снаружи */
+  font-family: 'Poppins', sans-serif;
+  color: #fff;
+
+  transition: transform 0.3s ease;
+}
+
+.cardMovie:hover {
+  transform: translateY(-10px) scale(1.025);
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.35);
+}
+
+.cardMovie:active{
+  transform: translateY(-3px) scale(0.98);
+}
+
+
+.imgCard {
+  display: block;              /* убирает лишний зазор под картинкой */
+  width: 100%;
+  aspect-ratio: 5 / 8;         /* пропорции постера, высота считается сама */
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.3s ease;
+}
+
+.cardMovie:hover .imgCard {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.65);
+}
+
+.nameFilm {
+  margin-top: 20px;
+  font-size: 20px;
+  font-weight: 500;
+
+  transition: color 0.3s ease;
+}
+
+.cardMovie:hover .nameFilm{
+  color: #ff6384
+}
+
+.rating {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stars {
+  color: #f9c74f;
+  letter-spacing: 2px;
+}
+
+.rait {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 15px;
+}

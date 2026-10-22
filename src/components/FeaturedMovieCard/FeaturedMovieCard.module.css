@@ -1,0 +1,69 @@
+.card {
+    position: relative;
+    width: 730px;
+    height: 400px;
+
+    margin: 0px auto;
+   
+    box-shadow: 0 20px 40px rgba(0,0,0,.5);
+
+    font-family: 'Poppins', sans-serif; 
+
+    background: linear-gradient(115deg,#141b31,#10172a);
+     border: 1px solid rgba(255,255,255,.07);
+      border-radius: 12px;
+}
+
+.cardImage{
+    position: absolute;
+    top: -50px;
+    left: 30px;
+    width: 300px;
+    height: 430px;
+    object-fit: cover;
+    box-shadow: 0 20px 40px rgba(0,0,0,.6);
+    border-radius: 7px;
+    
+}
+
+.cardInfo{
+    margin-left: 350px;
+    padding: 30px 20px 10px 20px;
+
+    display:flex; 
+    flex-direction:column;
+    justify-content:center;
+    min-height:100%;
+    padding-right:32px;
+  
+    
+}
+
+.cardName{
+    color: #fff;
+    font-size: 34px;
+    font-weight: bold;
+
+    font-family:'Manrope',sans-serif;
+    font-size:clamp(27px,2.4vw,36px);
+    line-height:1.16; margin:0;
+    letter-spacing:-.035em;
+
+}
+
+.info { 
+    padding-top: 22px;
+    color: rgba(255, 255, 255, 0.6);     
+    font-size: 15px;
+    line-height: 1.8;                     
+    font-weight: 400;
+}
+
+
+@media(max-width:760px) {
+  .card { width:min(92vw,560px); height:310px; }
+  .cardImage { width:38%; height:320px; top:-20px; left:12px; }
+  .cardInfo { margin-left:42%; padding:15px; }
+  .cardName { font-size:24px; }
+  .info { font-size:12px; padding-top:12px; }
+}
