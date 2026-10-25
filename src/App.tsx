@@ -6,9 +6,6 @@ import MainContent from './components/MainContent/MainContent'
 import { useState } from 'react'
 
 
-
-
-
 function App() {
   const [findCard,setFindCard] = useState("");
   
@@ -17,11 +14,7 @@ function App() {
         <Header findText={findCard} setFindText={setFindCard}/>
       
         <MainContent findCard = {findCard}/>
-        <Footer/>
-        
-        
-
-      
+        <Footer/>  
 
     </div>
   )

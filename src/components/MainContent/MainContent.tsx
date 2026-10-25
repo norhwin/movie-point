@@ -7,6 +7,7 @@ import SpotlightSection from "../SpotlightSection/SpotlightSection"
 import TrailerSection from "../TrailerSection/TrailerSection"
 import styles from "./MainContent.module.css"
 import img1 from "../../assets/images/3.jpg"
+import SpotlightSectionCopy from "../SpotlightSection/SpotlightSectionCopy"
 
 type MainContentProps = {
   findCard : string;
@@ -35,7 +36,7 @@ const MainContent = ({findCard}:MainContentProps) => {
             <img src={img1} alt="" className={styles.splashLeft} />
             <img src={img1} alt="" className={styles.splashRight} />
       
-            <SpotlightSection findCard = {findCard} />
+            <SpotlightSectionCopy findCard = {findCard} />
             
             
           </div> 
