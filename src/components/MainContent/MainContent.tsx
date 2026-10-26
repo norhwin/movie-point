@@ -3,11 +3,10 @@ import { carouselCards } from "../../data/carouselCards"
 import Carousel from "../Carousel/Carousel"
 import FeaturedMovieCard from "../FeaturedMovieCard/FeaturedMovieCard"
 import NewsSection from "../NewsSection/NewsSection"
-import SpotlightSection from "../SpotlightSection/SpotlightSection"
 import TrailerSection from "../TrailerSection/TrailerSection"
 import styles from "./MainContent.module.css"
 import img1 from "../../assets/images/3.jpg"
-import SpotlightSectionCopy from "../SpotlightSection/SpotlightSectionCopy"
+import SpotlightSection from "../SpotlightSection/SpotlightSection"
 
 type MainContentProps = {
   findCard : string;
@@ -36,7 +35,7 @@ const MainContent = ({findCard}:MainContentProps) => {
             <img src={img1} alt="" className={styles.splashLeft} />
             <img src={img1} alt="" className={styles.splashRight} />
       
-            <SpotlightSectionCopy findCard = {findCard} />
+            <SpotlightSection findCard = {findCard} />
             
             
           </div> 
