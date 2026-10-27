@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./SpotlightSection.module.css"
 import MovieCard from "../MovieCard/MovieCard.tsx";
 import { getPopularFilms, type MoviesFilm } from "../../data/filmsAPI.ts"
@@ -45,13 +45,14 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
   
 
 
-
-    const [visibleFilms,setVisibleFilms] = useState<number>(8);
+    const limit = 8;
+    const [visibleFilms,setVisibleFilms] = useState<number>(limit);
     const [activeTab,setActiveTab] = useState<Tab>(tabs[0]);
     const [newBatchStart, setNewBatchStart] = useState<number | null>(null);
     const [showMinFilms, setShowMinFilms] = useState<boolean>(false);
     
-
+    
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const sortedFilms = useMemo(() => {
         const result = [...films];
@@ -76,28 +77,43 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
     
 
     const visibleCards = sortedFilms.filter(film =>
-    film.title.toLowerCase().includes(findCard.toLowerCase())
+        film.title.toLowerCase().includes(findCard.toLowerCase())
     )
+
+    
 
     const showMore = () =>{
         setNewBatchStart(visibleFilms);
-        setVisibleFilms((prev) => Math.min(prev + 8, visibleCards.length));
+        setVisibleFilms((prev) => Math.min(prev + limit, visibleCards.length));
     }
 
     const exitMoreShow = () =>{
         setShowMinFilms(true);
 
-        setTimeout(()=> {
-            setVisibleFilms(8);
+        if (timerRef.current !== null ){
+            clearTimeout(timerRef.current)
+        }
+        timerRef.current = setTimeout(()=> {
+            setVisibleFilms(limit);
             setNewBatchStart(null);
             setShowMinFilms(false);
+
+            timerRef.current = null;
         },500);
     }
 
-    const cardsToHide = Math.max(visibleFilms - 8, 1)
+    useEffect(()=>{
+        return () => {
+            if (timerRef.current !== null ){
+                clearTimeout(timerRef.current)
+            }
+        }
+    },[]) 
+
+    const cardsToHide = Math.max(visibleFilms - limit, 1)
     const cascadeDuratcion = 500;
-    const animationDuraction = 300;
-    const stepDelay = cardsToHide > 1 ? (cascadeDuratcion - animationDuraction) / cardsToHide -1 : 0;
+    const animationDuration  = 300;
+    const stepDelay = cardsToHide > 1 ? (cascadeDuratcion - animationDuration) / (cardsToHide -1) : 0;
 
     // }
     return (
@@ -118,13 +134,15 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
                 
                 
                 
-                    <div className={styles.content}>
+                    <div className={styles.content} style={{'--animationDuration' : `${animationDuration}ms`} as React.CSSProperties}>
                         {loading && <p>Загрузка фильмов...</p>}
 
                         {error && <p>{error}</p>}
+
+                        {!loading && !error && visibleCards.length === 0 && <p> Ничего не найдено</p> }
                         <div className={styles.cardsFilm}>
                             {visibleCards.slice(0,visibleFilms).map((film,index) => {
-                                const startCard = index>=8;
+                                const startCard = index>=limit;
                                 const isNew = newBatchStart !== null && index >= newBatchStart;  
                                                         
                                 
@@ -160,7 +178,7 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
                             )})}
                         </div>
 
-                        {visibleCards.length > 8 && (visibleFilms < visibleCards.length ? (
+                        {visibleCards.length > limit && (visibleFilms < visibleCards.length ? (
                         <button onClick={showMore} className={styles.btnMore}>
                             Показать еще
                         </button>

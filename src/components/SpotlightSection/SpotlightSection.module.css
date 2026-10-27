@@ -47,7 +47,7 @@
 }
 .cardsFilm{
     display: grid;
-    grid-template-columns:repeat(4,minmax(0,180px)); /* 3 колонки по 180 px */
+    grid-template-columns:repeat(4,minmax(0,180px)); 
     gap: 40px 24px;
     justify-content: center;
   
@@ -71,10 +71,6 @@
 }
 
 .btnMore{
-    border: none;
-
-    background-color: rgb(138, 134, 127);
-
     border-radius: 50%;
     width: 75px;
     height: 75px;
@@ -130,7 +126,7 @@
 }
 
 .cardDisappear {
-  animation: cardHide 300ms ease forwards;
+  animation: cardHide var(--animationDuration) ease forwards;
   pointer-events: none;
 }
 
