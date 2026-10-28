@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./SpotlightSection.module.css"
 import MovieCard from "../MovieCard/MovieCard.tsx";
-import { getPopularFilms, type MoviesFilm } from "../../data/filmsAPI.ts"
+import { getPopularFilms, searchFilm, type MoviesFilm } from "../../data/filmsAPI.ts"
 import SectionHeading from "../SectionHeading/SectionHeading.tsx";
 import imgNoPoster from "../../assets/images/default.png"
 
@@ -23,12 +23,14 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
 
 
     const [films, setFilms] = useState <MoviesFilm[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
     const [error,setError] = useState<string|null>(null)
-      
+    const [searchCard,setSearchCard] = useState<MoviesFilm[] | null>(null);
+    
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const timerServer =useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(()=>{
-        setLoading(true);
         getPopularFilms()
             .then(setFilms)
             .catch((err)=>{
@@ -41,9 +43,40 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
         
     }, []);
 
- 
-  
+   
 
+
+    useEffect(()=>{
+        if (!findCard.trim()){
+            setSearchCard(null);
+            return
+
+        }
+        if (timerServer.current !== null ){
+            clearTimeout(timerServer.current)
+        }
+        setLoading(true);
+        timerServer.current=setTimeout(()=>{
+            searchFilm(findCard)
+            .then(setSearchCard)
+            .finally(()=>{
+                setLoading(false);
+            })
+            timerServer.current = null;
+            
+        },500);
+        
+
+        return () =>{
+            if (timerServer.current !== null ){
+                clearTimeout(timerServer.current)
+                timerServer.current = null;
+        }
+        }
+    },[findCard]);
+
+    
+    
 
     const limit = 8;
     const [visibleFilms,setVisibleFilms] = useState<number>(limit);
@@ -52,10 +85,10 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
     const [showMinFilms, setShowMinFilms] = useState<boolean>(false);
     
     
-    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const sortedFilms = useMemo(() => {
-        const result = [...films];
+
+        const result = (findCard&&searchCard ? [...searchCard] : [...films])
 
         switch(activeTab){
             case tabs[0]:
@@ -72,14 +105,15 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
             default:
                 return result;
         }
-    }, [activeTab, films]);
+    }, [activeTab, films,searchCard, findCard]);
 
     
 
-    const visibleCards = sortedFilms.filter(film =>
-        film.title.toLowerCase().includes(findCard.toLowerCase())
-    )
+   
+    const visibleCards = sortedFilms;
 
+    
+   
     
 
     const showMore = () =>{
@@ -99,13 +133,14 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
             setShowMinFilms(false);
 
             timerRef.current = null;
-        },500);
+        },cascadeDuratcion);
     }
 
     useEffect(()=>{
         return () => {
             if (timerRef.current !== null ){
                 clearTimeout(timerRef.current)
+                timerRef.current = null;
             }
         }
     },[]) 

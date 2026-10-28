@@ -123,6 +123,11 @@
     animation: none;
     opacity: 1;
   }
+
+  .cardDisappear{
+    animation: none;
+    opacity: 0;
+  }
 }
 
 .cardDisappear {

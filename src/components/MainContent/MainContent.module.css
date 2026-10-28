@@ -68,10 +68,12 @@ pointer-events: none;
   display: grid;
   grid-template-rows: 1fr;
   transition: grid-template-rows 0.4s, opacity 0.4s;
+  pointer-events: all;
 }
 .carouselWrap.hidden {
   grid-template-rows: 0fr;
   opacity: 0;
+  pointer-events: none;
 
 }
 .carouselInner {
