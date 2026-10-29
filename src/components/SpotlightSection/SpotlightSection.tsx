@@ -26,13 +26,24 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error,setError] = useState<string|null>(null)
     const [searchCard,setSearchCard] = useState<MoviesFilm[] | null>(null);
+
+    const [page,setPage] = useState<number>(1);
+    const [totalPages, setTotalPages] = useState<number>(1);
     
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const timerServer =useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
     useEffect(()=>{
-        getPopularFilms()
-            .then(setFilms)
+        getPopularFilms(page)
+            .then((data) => {
+                setFilms((prev) =>
+                    page === 1 
+                        ? data.results
+                        : [...prev, ...data.results]
+                );
+                
+                setTotalPages(data.total_pages);
+            })
             .catch((err)=>{
                 console.error(err);
                 setError("Не удалось загрузить запрос")
@@ -41,39 +52,50 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
                 setLoading(false)
             })
         
-    }, []);
+    }, [page]);
 
    
 
 
     useEffect(()=>{
+         if (loading){
+            setLoading(false);
+        }
+
         if (!findCard.trim()){
             setSearchCard(null);
             return
 
         }
-        if (timerServer.current !== null ){
-            clearTimeout(timerServer.current)
-        }
+       
         setLoading(true);
-        timerServer.current=setTimeout(()=>{
-            searchFilm(findCard)
-            .then(setSearchCard)
+
+        const timer = setTimeout(()=>{    
+            searchFilm(findCard,page)
+            .then((data) =>{
+                setSearchCard((prev) =>
+                    page === 1 
+                        ? data.results
+                        : [...(prev ?? []), ...data.results]
+                );
+                setTotalPages(data.total_pages);
+            })
+            .catch((err)=>{
+                console.error(err);
+                setError("Не удалось выполнить поиск")
+            })
             .finally(()=>{
                 setLoading(false);
             })
-            timerServer.current = null;
+            
             
         },500);
         
 
         return () =>{
-            if (timerServer.current !== null ){
-                clearTimeout(timerServer.current)
-                timerServer.current = null;
+            clearTimeout(timer);
         }
-        }
-    },[findCard]);
+    },[findCard,page]);
 
     
     
@@ -88,7 +110,7 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
 
     const sortedFilms = useMemo(() => {
 
-        const result = (findCard&&searchCard ? [...searchCard] : [...films])
+        const result = (findCard&&searchCard ? [...searchCard] : findCard ? [ ] : [...films])
 
         switch(activeTab){
             case tabs[0]:
@@ -149,6 +171,10 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
     const cascadeDuratcion = 500;
     const animationDuration  = 300;
     const stepDelay = cardsToHide > 1 ? (cascadeDuratcion - animationDuration) / (cardsToHide -1) : 0;
+
+    
+
+    
 
     // }
     return (
@@ -213,17 +239,23 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
                             )})}
                         </div>
 
-                        {visibleCards.length > limit && (visibleFilms < visibleCards.length ? (
-                        <button onClick={showMore} className={styles.btnMore}>
-                            Показать еще
-                        </button>
-                        )
-                        :
-                        (
-                        <button onClick={exitMoreShow} disabled={showMinFilms} className={styles.btnMore}>
-                            Скрыть
-                        </button>
-                        ))
+                        {visibleCards.length > limit && 
+                        (visibleFilms < visibleCards.length 
+                            ? (
+                            <button onClick={showMore} className={styles.btnMore}>
+                                Показать еще
+                            </button>
+                            )
+                            :(
+                            <div>
+                                
+                                <button onClick={exitMoreShow} disabled={showMinFilms} className={styles.btnMore}>
+                                    Скрыть
+                                </button>
+                                <button onClick={() => setPage((next) => next + 1)} disabled={loading} className={styles.nextPage}> {">"} </button>
+                            </div>
+                            ))
+                            
 
                     }
                     </div>  

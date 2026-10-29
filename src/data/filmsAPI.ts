@@ -8,11 +8,16 @@ export type MoviesFilm = {
     popularity: number;
     poster_path: string | null;
     id:number;
+   
     
 }
 
 type MoviesResponse  ={
-    results: MoviesFilm[]
+    page:number;
+    results: MoviesFilm[];
+    total_pages:number;
+    total_results:number;
+   
 }
 
 const options = {
@@ -23,29 +28,34 @@ const options = {
       }
     };
 
-async function responseData(response:Response): Promise<MoviesFilm[]> {
+async function responseData(response:Response): Promise<MoviesResponse> {
   if (!response.ok) {
       const text = await response.text();
       throw new Error(`HTTP error! Status: ${response.status}, body: ${text}`);
     }
     const data:MoviesResponse = await response.json();
-
-    return data.results 
+    console.log(data.results);
+    return data;
 }
  
 
-export async function getPopularFilms(): Promise<MoviesFilm[]> {
+export async function getPopularFilms(page: number = 1): Promise<MoviesResponse> {
     if (!APIToken) {
       throw new Error("APIToken не задан");
     }
-  
+    
+    const params = new URLSearchParams();
+
+    params.set("language", "ru-RU");
+    params.set("page", String(page));
+
    
-    const response = await fetch("https://api.themoviedb.org/3/movie/popular?language=ru-RU&page=1",options);
+    const response = await fetch(`https://api.themoviedb.org/3/movie/popular?${params}`,options);
     return responseData(response)
     
 }
 
-export async function searchFilm(query:string):Promise<MoviesFilm[]> {
+export async function searchFilm(query:string,page:number = 1):Promise<MoviesResponse> {
   if (!APIToken) {
       throw new Error("APIToken не задан");
     }
@@ -53,6 +63,7 @@ export async function searchFilm(query:string):Promise<MoviesFilm[]> {
 
   params.set("query", query);
   params.set("language", "ru-RU");
+  params.set("page", String(page));
 
   const response = await fetch(`https://api.themoviedb.org/3/search/movie?${params}`,options);
 
