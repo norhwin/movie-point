@@ -27,22 +27,14 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
     const [error,setError] = useState<string|null>(null)
     const [searchCard,setSearchCard] = useState<MoviesFilm[] | null>(null);
 
-    const [page,setPage] = useState<number>(1);
-    const [totalPages, setTotalPages] = useState<number>(1);
-    
+
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 
     useEffect(()=>{
-        getPopularFilms(page)
+        getPopularFilms()
             .then((data) => {
-                setFilms((prev) =>
-                    page === 1 
-                        ? data.results
-                        : [...prev, ...data.results]
-                );
-                
-                setTotalPages(data.total_pages);
+                setFilms(data.results)
             })
             .catch((err)=>{
                 console.error(err);
@@ -52,18 +44,17 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
                 setLoading(false)
             })
         
-    }, [page]);
+    },[]);
 
    
 
 
     useEffect(()=>{
-         if (loading){
-            setLoading(false);
-        }
-
+        const signal = new AbortController();
+        setError(null);
         if (!findCard.trim()){
             setSearchCard(null);
+            setLoading(false);
             return
 
         }
@@ -71,21 +62,19 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
         setLoading(true);
 
         const timer = setTimeout(()=>{    
-            searchFilm(findCard,page)
+            searchFilm(findCard,signal.signal)
             .then((data) =>{
-                setSearchCard((prev) =>
-                    page === 1 
-                        ? data.results
-                        : [...(prev ?? []), ...data.results]
-                );
-                setTotalPages(data.total_pages);
+                setSearchCard(data.results)
             })
             .catch((err)=>{
+                if(err.name === "AbortError") return;
                 console.error(err);
                 setError("Не удалось выполнить поиск")
             })
             .finally(()=>{
-                setLoading(false);
+                 if (!signal.signal.aborted){
+                    setLoading(false);
+                }
             })
             
             
@@ -93,9 +82,10 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
         
 
         return () =>{
+            signal.abort();
             clearTimeout(timer);
         }
-    },[findCard,page]);
+    },[findCard]);
 
     
     
@@ -140,7 +130,7 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
 
     const showMore = () =>{
         setNewBatchStart(visibleFilms);
-        setVisibleFilms((prev) => Math.min(prev + limit, visibleCards.length));
+        setVisibleFilms(() => Math.max(visibleCards.length));
     }
 
     const exitMoreShow = () =>{
@@ -176,7 +166,6 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
 
     
 
-    // }
     return (
         <section>
                 <SectionHeading title="Spotlight This Month" >
@@ -246,13 +235,12 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
                                 Показать еще
                             </button>
                             )
-                            :(
-                            <div>
-                                
+                            :(  
+                            <div className={styles.buttonExit}>
                                 <button onClick={exitMoreShow} disabled={showMinFilms} className={styles.btnMore}>
                                     Скрыть
                                 </button>
-                                <button onClick={() => setPage((next) => next + 1)} disabled={loading} className={styles.nextPage}> {">"} </button>
+                                <button className={styles.btnMore} onClick={exitMoreShow}> Показать больше </button>
                             </div>
                             ))
                             

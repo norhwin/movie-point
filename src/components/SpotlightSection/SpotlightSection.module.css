@@ -70,6 +70,12 @@
     }
 }
 
+.buttonExit{
+  display: grid;
+  grid-template-columns: repeat(2,auto);
+  gap: 20px;
+  justify-content: center;
+}
 .btnMore{
     border-radius: 50%;
     width: 75px;

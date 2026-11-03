@@ -55,7 +55,7 @@ export async function getPopularFilms(page: number = 1): Promise<MoviesResponse>
     
 }
 
-export async function searchFilm(query:string,page:number = 1):Promise<MoviesResponse> {
+export async function searchFilm(query:string, signal?: AbortSignal,page:number = 1 ):Promise<MoviesResponse> {
   if (!APIToken) {
       throw new Error("APIToken не задан");
     }
@@ -65,7 +65,7 @@ export async function searchFilm(query:string,page:number = 1):Promise<MoviesRes
   params.set("language", "ru-RU");
   params.set("page", String(page));
 
-  const response = await fetch(`https://api.themoviedb.org/3/search/movie?${params}`,options);
+  const response = await fetch(`https://api.themoviedb.org/3/search/movie?${params}`, {...options,signal});
 
   return responseData(response);
   
