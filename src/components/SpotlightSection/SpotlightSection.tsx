@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./SpotlightSection.module.css"
 import MovieCard from "../MovieCard/MovieCard.tsx";
-import { getPopularFilms, searchFilm, type MoviesFilm } from "../../data/filmsAPI.ts"
+import { getFilms, searchFilm, type MoviesFilm } from "../../data/filmsAPI.ts"
 import SectionHeading from "../SectionHeading/SectionHeading.tsx";
 import imgNoPoster from "../../assets/images/default.png"
 
@@ -32,7 +32,7 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
 
 
     useEffect(()=>{
-        getPopularFilms()
+        getFilms("popular")
             .then((data) => {
                 setFilms(data.results)
             })
@@ -130,7 +130,7 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
 
     const showMore = () =>{
         setNewBatchStart(visibleFilms);
-        setVisibleFilms(() => Math.max(visibleCards.length));
+        setVisibleFilms(visibleCards.length);
     }
 
     const exitMoreShow = () =>{

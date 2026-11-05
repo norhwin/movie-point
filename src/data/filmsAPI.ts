@@ -20,6 +20,14 @@ type MoviesResponse  ={
    
 }
 
+export type MovieCategory =
+    | "popular"
+    | "upcoming"
+    | "now_playing"
+    | "top_rated";
+
+
+
 const options = {
       method: 'GET',
       headers: {
@@ -39,7 +47,7 @@ async function responseData(response:Response): Promise<MoviesResponse> {
 }
  
 
-export async function getPopularFilms(page: number = 1): Promise<MoviesResponse> {
+export async function getFilms(category:MovieCategory, page: number = 1): Promise<MoviesResponse> {
     if (!APIToken) {
       throw new Error("APIToken не задан");
     }
@@ -50,7 +58,7 @@ export async function getPopularFilms(page: number = 1): Promise<MoviesResponse>
     params.set("page", String(page));
 
    
-    const response = await fetch(`https://api.themoviedb.org/3/movie/popular?${params}`,options);
+    const response = await fetch(`https://api.themoviedb.org/3/movie/${category}?${params}`,options);
     return responseData(response)
     
 }

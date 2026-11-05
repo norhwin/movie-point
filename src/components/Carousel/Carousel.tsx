@@ -8,12 +8,13 @@ import styles from "./Carousel.module.css"
 type CarouselProps<T> = {
     items: T[];
     renderItem: (item:T) => React.ReactNode; 
+    loading?: boolean;
 }
 
 
-const Carousel = <T,>({items,renderItem}: CarouselProps<T>) => {
+const Carousel = <T,>({items,renderItem,loading}: CarouselProps<T>) => {
     
-    const [currentIndex, setCurrentIndex] = useState(() => Math.floor(Math.random() * items.length));
+    const [currentIndex, setCurrentIndex] = useState(0);
     const Next = () => {
         setCurrentIndex(i => (i + 1 ) % items.length);
     }
@@ -23,8 +24,12 @@ const Carousel = <T,>({items,renderItem}: CarouselProps<T>) => {
     }
 
   return (
+
+
     <div className={styles.carousel}>
-        <div className={styles.cardsAll}>
+        {loading? <p>ИДЕТ ЗАГРУЗКА...</p> : ""} 
+        {!loading && items.length>0 && 
+            (<div className={styles.cardsAll}>
 
            {items.map((item,index)=>{
                 const position = (index - currentIndex + items.length ) % items.length;
@@ -53,6 +58,7 @@ const Carousel = <T,>({items,renderItem}: CarouselProps<T>) => {
             <button onClick={Next} className={styles.rightBtn}>{">"}</button>
         
          </div>
+         )}
         
     </div>
   )
