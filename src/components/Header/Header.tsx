@@ -1,5 +1,6 @@
 import { useState } from "react"
 
+import { Link, useLocation } from 'react-router-dom';
 import bg from "../../assets/images/bg-header.jpg"
 import styles from "./Header.module.css"
 import iconLogo from "../../assets/images/iconLogo.png"
@@ -10,13 +11,16 @@ type HeaderProps= {
 }
 
 const Header = ({findText,setFindText}:HeaderProps) => {
+    const {pathname} = useLocation();
+
+    const isHome = pathname === "/"
     const isSearching = findText.trim() !== "";
     const [name] = useState("Guest")
     const [menuOpen, setMenuOpen] = useState(false)
 
   return (
     <div>
-      <header className={`${styles.headerBG} ${isSearching ? styles.compact : ""}`} style={{'--bg-image' : `url(${bg})`} as React.CSSProperties}>
+      <header className={`${styles.headerBG} ${isSearching || !isHome ? styles.compact : ""}`} style={{'--bg-image' : `url(${bg})`} as React.CSSProperties}>
           <div className={styles.headerMain}>
             
             <div className={styles.headerLeft}>
@@ -33,12 +37,9 @@ const Header = ({findText,setFindText}:HeaderProps) => {
               </div>
 
               <nav className={`${styles.nav} ${menuOpen ? styles.open : ""}`}>
-                <a href="#">Home</a>
-                <a href="#">Movies</a>
-                <a href="#">Celebrity List</a>
-                <a href="#">Top Movies</a>
-                <a href="#">News</a>
-                <a href="#">Pages</a>
+                <Link to = "/" > Главная</Link>
+                <Link to = "/movie" > Фильмы</Link>
+                
                 <button className={styles.tickets}>Tickets</button>
               </nav>
             </div>

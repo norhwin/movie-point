@@ -49,12 +49,33 @@
   gap: 16px;
 }
 
-.stars {
-  color: #f9c74f;
-  letter-spacing: 2px;
-}
-
 .rait {
   color: rgba(255, 255, 255, 0.6);
   font-size: 15px;
+}
+
+.starsAll {
+    position: relative;
+    display: inline-block;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.starsGray {
+    color: gray;
+}
+
+.starsGold {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    color: gold;
+}
+
+.score {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffc34d;
 }

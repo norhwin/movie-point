@@ -221,7 +221,7 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
                                     <MovieCard 
                                         nameFilm={film.title} 
                                         img = {film.poster_path ? `https://image.tmdb.org/t/p/w500${film.poster_path}` : imgNoPoster}
-                                        views={film.popularity}
+                                        voteCount={film.popularity}
                                         stars={film.vote_average}
                                         />
                                 </div>

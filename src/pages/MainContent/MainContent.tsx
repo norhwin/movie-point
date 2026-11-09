@@ -1,16 +1,16 @@
 
-import { carouselCards } from "../../data/carouselCards"
-import Carousel from "../Carousel/Carousel"
-import FeaturedMovieCard from "../FeaturedMovieCard/FeaturedMovieCard"
-import NewsSection from "../NewsSection/NewsSection"
-import TrailerSection from "../TrailerSection/TrailerSection"
+import Carousel from "../../components/Carousel/Carousel"
+import FeaturedMovieCard from "../../components/FeaturedMovieCard/FeaturedMovieCard"
+import NewsSection from "../../components/NewsSection/NewsSection"
+import TrailerSection from "../../components/TrailerSection/TrailerSection"
 import styles from "./MainContent.module.css"
 import img1 from "../../assets/images/3.jpg"
-import SpotlightSection from "../SpotlightSection/SpotlightSection"
+import SpotlightSection from "../../components/SpotlightSection/SpotlightSection"
 import { useEffect, useState } from "react"
 import { getFilms, type MoviesFilm } from "../../data/filmsAPI"
 import imgNoPoster from "../../assets/images/default.png"
-import { films } from "../../data/films"
+import { formatDate } from "../../utils/formatDate"
+
 
 type MainContentProps = {
   findCard : string;
@@ -37,6 +37,8 @@ const MainContent = ({findCard}:MainContentProps) => {
     })
     
   },[]);
+
+  
   return (
     <>
       <div className={styles.background}>
@@ -55,7 +57,7 @@ const MainContent = ({findCard}:MainContentProps) => {
                     img={film.poster_path 
                       ? `https://image.tmdb.org/t/p/w500${film.poster_path}` 
                       : imgNoPoster}
-                    releaseDate ={film.release_date}
+                    releaseDate ={formatDate(film.release_date)}
                     />
                   } 
                     loading={loading} /> 

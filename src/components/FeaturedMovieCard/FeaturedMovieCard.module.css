@@ -49,6 +49,12 @@
     line-height:1.16; margin:0;
     letter-spacing:-.035em;
 
+    display: -webkit-box;
+     line-clamp:3;
+    -webkit-line-clamp: 3;
+  
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .info { 
@@ -57,8 +63,19 @@
     font-size: 15px;
     line-height: 1.8;                     
     font-weight: 400;
+
+    display: -webkit-box;
+     line-clamp:7;
+    -webkit-line-clamp: 7;
+  
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
+.releaseDate{
+    color: rgba(188, 140, 140, 0.6); ;
+    font-weight: bold;
+}
 
 @media(max-width:760px) {
   .card { width:min(92vw,560px); height:310px; }
@@ -67,3 +84,4 @@
   .cardName { font-size:24px; }
   .info { font-size:12px; padding-top:12px; }
 }
+
