@@ -153,6 +153,45 @@
   animation-play-state: paused;
 }
 
+
+.starsScore {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+}
+
+.starsAll {
+    position: relative;
+    display: inline-block;
+    font-size: 19px;
+    line-height: 1;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.starsGray {
+    color: #454b5c;
+}
+
+.starsGold {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    color: #ffc34d;
+}
+
+.score {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffc34d;
+    white-space: nowrap;
+}
+
+
+
 @keyframes rotateArc {
   to {
     transform: rotate(360deg);

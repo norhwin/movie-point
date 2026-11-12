@@ -1,16 +1,42 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { trailer } from "../../data/trailer"
 import styles from "./TrailerCards.module.css"
 
 import ReactPlayer from 'react-player';
 import Modal from "../Modal/Modal";
+import { getRandomFilm, getTrailers, type TrailerItem } from "../../data/getRandomTrailer";
+import { getMovieVideos } from "../../data/filmsAPI";
 
 
 const TrailerBlock = () => {
-    const [order,setOrder] = useState(trailer);
+    const [order,setOrder] = useState<TrailerItem[]>([]);
+    const [error,setError] = useState<string|null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [modalActive, setModalActive]= useState (false);
+
+ useEffect(() => {
+    getTrailers()
+    .then(setOrder)
+    .catch((err)=>{
+        console.error(err);
+        setError("Не удалось загрузить запрос")
+    })
+    .finally(()=>{
+        setLoading(false)
+    })
+}, []);
+    
+    if (loading) return <div>Загрузка трейлеров...</div>;
+    if (error) return <div>Ошибка: {error}</div>;
+    if (order.length === 0) return <div>Трейлеры не найдены</div>;
+
+    
 
     const big = order[0];
     const side = order.slice(1,3);
+
+    const ratingPercent = Math.min(100, Math.max(0, (big.stars / 10) * 100))
+
 
     const swapWithBig = (index:number) => {
         const copy = [...order];
@@ -25,8 +51,7 @@ const TrailerBlock = () => {
     const prev = () => setOrder((old)=> [old[old.length - 1], ...old.slice(0,-1)]);
 
 
-    const [modalActive, setModalActive]= useState (false);
-
+    
     
  
     return (
@@ -51,7 +76,21 @@ const TrailerBlock = () => {
                         <div className={styles.raiting}>
                             <h3 className={styles.nameBig}>{big.name}</h3>
                             
-                            <span className={styles.stars}>{'★'.repeat(big.stars)}</span>
+                            <div className={styles.starsScore}>
+                                <div className={styles.starsAll}>
+                                    <span className={styles.starsGray}>★★★★★</span>
+                                    <span
+                                        className={styles.starsGold}
+                                        style={{ width: `${ratingPercent}%` }}
+                                    >
+                                        ★★★★★
+                                    </span>
+                                </div>
+
+                                <span className={styles.score}>
+                                    {(big.stars.toFixed(1))}
+                                </span>
+                            </div>
                         </div>
                     
                         <div className={styles.btnNavigation}>
@@ -66,7 +105,7 @@ const TrailerBlock = () => {
                 <div className={styles.rightCards}>
                     {side.map((trailer,i) => (
                         <div
-                        key={trailer.name}
+                        key={trailer.id}
                         className={styles.smallCard}
                         onClick={()=>swapWithBig(i+1)}
                         > 
@@ -84,9 +123,9 @@ const TrailerBlock = () => {
                 
                 <Modal active={modalActive} setActive={setModalActive} onNext={next} onPrev={prev}>
                     <ReactPlayer 
-                        key={big.name}
+                        key={big.id}
                         light={big.img}
-                        src="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1"
+                        src={`https://www.youtube.com/watch?v=${big.key}`}
                         width="100%"    
                         height="400px"
                         className={styles.player} />

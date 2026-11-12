@@ -1,5 +1,5 @@
 import type {NewsCardProps} from "../components/NewsCard/NewsCard"
-
+/* min 8 */
 export const news: NewsCardProps[] = [
   {
     title: 'Дюна: Часть третья получила первый тизер',

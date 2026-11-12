@@ -20,19 +20,31 @@ const MovieCard = ({ nameFilm, img, voteCount, stars }: MovieCardProps) => {
       <img src={img} alt={nameFilm} className={styles.imgCard} />
       <h3 className={styles.nameFilm}>{nameFilm}</h3>
 
+      
       <div className={styles.rating}>
-        <div className={styles.starsAll}>
-          <span className={styles.starsGray}>
-              {'★★★★★'}
+
+          <div className={styles.starsScore}>
+              <div className={styles.starsAll}>
+                  <span className={styles.starsGray}>★★★★★</span>
+                  <span
+                      className={styles.starsGold}
+                      style={{ width: `${ratingPercent}%` }}
+                  >
+                      ★★★★★
+                  </span>
+              </div>
+
+              <span className={styles.score}>
+                  {stars.toFixed(1)}
+              </span>
+          </div>
+
+          <span className={styles.rait}>
+              {formattedVotes} voters
           </span>
-          <span className={styles.starsGold} style={{width: `${ratingPercent}%` }}>{'★★★★★'}</span>
-          
-        </div>
-        <span className={styles.score}>{stars.toFixed(1)}</span>
-        <span
-           className={styles.rait}>{formattedVotes} voters
-        </span>
+
       </div>
+
     </div>
   )
 }
