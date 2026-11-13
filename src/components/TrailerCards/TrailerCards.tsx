@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
-import { trailer } from "../../data/trailer"
+
 import styles from "./TrailerCards.module.css"
 
 import ReactPlayer from 'react-player';
 import Modal from "../Modal/Modal";
-import { getRandomFilm, getTrailers, type TrailerItem } from "../../data/getRandomTrailer";
-import { getMovieVideos } from "../../data/filmsAPI";
+import { getRandomTrailer,  type TrailerItem } from "../../data/getRandomTrailer";
+
 
 
 const TrailerBlock = () => {
@@ -15,7 +15,7 @@ const TrailerBlock = () => {
     const [modalActive, setModalActive]= useState (false);
 
  useEffect(() => {
-    getTrailers()
+    getRandomTrailer(3)
     .then(setOrder)
     .catch((err)=>{
         console.error(err);

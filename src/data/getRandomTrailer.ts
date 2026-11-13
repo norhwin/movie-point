@@ -1,5 +1,6 @@
 
-import { getFilms, getMovieVideos, type MoviesFilm, type MoviesResponse, type MovieVideo, type MovieVideosResponse } from "./filmsAPI";
+import { getFilms, getMovieVideos, type MovieVideo,} from "./filmsAPI";
+
 
 function shuffle<T>(arr:T[]): T[]{
     const copy = [...arr];
@@ -12,8 +13,13 @@ function shuffle<T>(arr:T[]): T[]{
 }
 
 function checkTrailers(condidats:MovieVideo[]): MovieVideo | undefined{
-    return condidats.find(condidat => condidat.site === "YouTube" && condidat.type === "Trailer");
+    const youtube = condidats.filter(condidat => condidat.site === "YouTube");
 
+    return (
+        youtube.find(v=> v.type === "Trailer" && v.official) ??
+        youtube.find(v=> v.type === "Trailer") ??
+        youtube[0]
+    )
 }
 
 export type TrailerItem = {
@@ -25,28 +31,33 @@ export type TrailerItem = {
 };
 
 
-export async function getRandomFilm(): Promise<MoviesFilm[]>{
-    const {results: trailerFilms} =await getFilms("popular");
-    const condidats = shuffle(trailerFilms).slice(0,6);
-    return condidats
-} 
+export async function getRandomTrailer(count:number):Promise<TrailerItem[]> {
+    const {results:movie} = await getFilms("popular",2);
+    const shuffleFilm = shuffle(movie.filter(v => v.poster_path)).slice(0,count * 2);
+    const witchTrailer = await Promise.all(
+        shuffleFilm.map(async film =>
+            {
+                try{
+        
+            const {results:video} = await getMovieVideos(film.id);
+            const trailer = checkTrailers(video);
+            return trailer ? {film,trailer} : null;
+                }
+                catch{
+                    return null;
+                }
+        })
+    )
 
-export async function  getTrailers():Promise<TrailerItem[]> {
-    const films = await getRandomFilm();
-    const items = await Promise.all(
-    films.map(async (film)=>{
-        const {results} = await getMovieVideos(film.id);
-        const trailer = checkTrailers(results);
-        if(!trailer) return null;
-
-        return {id: film.id,
-            name:film.title,
-            stars: film.vote_average,
-            img: `https://image.tmdb.org/t/p/w780${film.poster_path}`,
-            key:trailer.key} 
-    })
-)
-   const ready = items.filter((item): item is TrailerItem => item !== null);
-   return ready
+    return witchTrailer
+    .filter((x): x is NonNullable<typeof x> => x !== null)
+    .slice(0,count)
+    .map(({film,trailer})=>({
+        id: film.id,
+        name:film.title,
+        stars: film.vote_average,
+        img: `https://image.tmdb.org/t/p/w780${film.poster_path}`,
+        key: trailer.key
+    }));
+    
 }
-
