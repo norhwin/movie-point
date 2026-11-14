@@ -4,6 +4,8 @@ import MovieCard from "../MovieCard/MovieCard.tsx";
 import { getFilms, searchFilm, type MoviesFilm } from "../../data/filmsAPI.ts"
 import SectionHeading from "../SectionHeading/SectionHeading.tsx";
 import imgNoPoster from "../../assets/images/default.png"
+import { useNavigate } from "react-router-dom";
+
 
 type SpotlightProps ={
     findCard: string
@@ -26,6 +28,7 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error,setError] = useState<string|null>(null)
     const [searchCard,setSearchCard] = useState<MoviesFilm[] | null>(null);
+    const navigate = useNavigate();
 
 
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -162,7 +165,6 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
     const animationDuration  = 300;
     const stepDelay = cardsToHide > 1 ? (cascadeDuratcion - animationDuration) / (cardsToHide -1) : 0;
 
-    
 
     
 
@@ -240,7 +242,7 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
                                 <button onClick={exitMoreShow} disabled={showMinFilms} className={styles.btnMore}>
                                     Скрыть
                                 </button>
-                                <button className={styles.btnMore} onClick={exitMoreShow}> Показать больше </button>
+                                <button className={styles.btnMore} onClick={()=> navigate("/movie")}> Показать больше </button>
                             </div>
                             ))
                             
