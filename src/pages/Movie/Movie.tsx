@@ -5,6 +5,8 @@ import { getFilms, searchFilm, type MoviesFilm } from "../../data/filmsAPI"
 import SectionHeading from "../../components/SectionHeading/SectionHeading"
 import { useNavigate } from "react-router-dom"
 import imgNoPoster from "../../assets/images/poster.jpg"
+
+
 type MovieProps ={
     findCard: string
 }
@@ -26,9 +28,15 @@ const [error,setError] = useState<string | null>(null)
 const navigate = useNavigate();
 const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 const [page,setPage] = useState<number>(1); 
+const [totalPage,setTotalPage] = useState<number|null>(null);
+
+const sentinelRef = useRef<HTMLDivElement|null>(null);  
+const [loadingMore, setLoadingMore] = useState(false)
 useEffect(()=>{
+    if(page>1) setLoadingMore(true);
     getFilms("popular", page)
     .then((data)=>{
+        setTotalPage(data.total_pages)
         setDataFilm((old)=>
             page ===1? 
             data.results
@@ -41,6 +49,7 @@ useEffect(()=>{
     })
     .finally(()=>{
         setLoading(false);
+        setLoadingMore(false);
     })
 },[page])
 
@@ -77,6 +86,34 @@ useEffect(()=> {
     },[findCard]);
 
 
+useEffect(()=>{
+    const el = sentinelRef.current
+    if(!el){
+        return
+    }
+    if(loadingMore) return;
+
+
+    const observer = new IntersectionObserver(([entry])=>{
+        if (entry.isIntersecting){
+            if( totalPage!==null && page >= totalPage  ){
+                "Страницы закончились. Дальше живут драконы"
+                return
+            }
+            else{
+                setPage((p) => p + 1);
+            }
+
+        }
+    },{rootMargin:"200px"});
+
+    observer.observe(el);
+    return ()=>{
+        observer.disconnect()
+    }
+},[totalPage, page, dataFilm.length, loading, loadingMore])
+
+
 const [activeTab,setActiveTab] = useState<Tab>(tabs[0]);
 
 
@@ -102,10 +139,11 @@ const sortedFilms = useMemo(() => {
     }, [activeTab, dataFilm,searchCard, findCard]);
 
 
-   
+
 if (loading) return <div>Загрузка фильмов...</div>;
 if (error) return <div>Ошибка: {error}</div>;
 if (sortedFilms.length === 0) return <div>фильмы не найдены</div>;
+
   return (
     <div>
         <SectionHeading title="MOVIE" >
@@ -122,20 +160,27 @@ if (sortedFilms.length === 0) return <div>фильмы не найдены</div>
                     </nav>
         </SectionHeading>
       <div className={styles.movieCards}>
-            {sortedFilms.map((film)=>{
+            
                 
-                return <MovieCard
-                key={film.id}
-                nameFilm={film.title} 
-                img= {film.poster_path ? `https://image.tmdb.org/t/p/w500${film.poster_path}` : imgNoPoster}
-                voteCount={film.popularity} 
-                stars={film.vote_average} />
+            {sortedFilms.map((film,index)=>{
+                const isRef = (sortedFilms.length - 1  === index) 
+                
+                return (
+                
+                <div key={film.id} ref={isRef ? sentinelRef : null}> 
+               
+                <MovieCard
+                    
+                    nameFilm={film.title} 
+                    img= {film.poster_path ? `https://image.tmdb.org/t/p/w500${film.poster_path}` : imgNoPoster}
+                    voteCount={film.popularity} 
+                    stars={film.vote_average} />
+                </div>
+                )
             })}
             
-      </div>
-      <button type="button" onClick={() => setPage((p) => p + 1)}>
-             Загрузить ещё
-    </button>       
+      </div>  
+      {loadingMore && <div>Загружаю ещё...</div>}    
     </div>
   )
 }
