@@ -1,6 +1,140 @@
+
+
+.page {
+    width: 100%;
+    color: #fff;
+}
+
+.tabs {
+    display: flex;
+    align-items: center;
+    gap: clamp(16px, 3vw, 38px);
+    flex-wrap: wrap;
+}
+
+.tab,
+.tabActive {
+    position: relative;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    outline: none;
+
+    color: #aaa;
+    padding: 10px 0;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    transition: color 0.25s ease, border-color 0.25s ease;
+}
+
+.tab:hover {
+    color: #ff496f;
+}
+
+.tabActive {
+    color: #ff496f;
+    border-bottom-color: #ff496f;
+}
+
 .movieCards{
     display: grid;
     grid-template-columns: repeat(6,minmax(0,180px));
     gap: 40px 24px;
     justify-content: center;
+    margin-top: 30px;
+}
+
+
+.movieCards > * {
+    min-width: 0;
+    animation: showFilm 0.4s ease;
+}
+
+@keyframes showFilm {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.status {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    color: #aaa;
+    font-size: 14px;
+    padding: 35px 0;
+}
+
+.loader {
+    width: 17px;
+    height: 17px;
+    border: 2px solid #ffffff30;
+    border-top-color: #ff496f;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.ending {
+    text-align: center;
+    color: #aaa;
+    font-size: 14px;
+    padding: 35px 0;
+}
+
+.ending span {
+    display: block;
+    color: #ff496f;
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.error {
+    text-align: center;
+    color: #ff6384;
+    padding: 30px;
+}
+
+@media (max-width: 850px) {
+    .movieCards {
+        grid-template-columns: repeat(3, minmax(0, 180px));
+        gap: 30px 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .movieCards {
+        grid-template-columns: repeat(2, minmax(0, 180px));
+        gap: 24px 12px;
+    }
+
+    .tabs {
+        gap: 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .movieCards > * {
+        animation: none;
+    }
+
+    .loader {
+        animation: none;
+    }
 }

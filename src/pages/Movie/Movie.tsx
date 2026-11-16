@@ -12,11 +12,12 @@ type MovieProps ={
 }
 
 const tabs = [
-    "Popular",
-    "A-Z",
-    "Top Rated",
-    "Recently Released"
+    { title: "Popular", category: "popular" },
+    { title: "Coming Soon", category: "upcoming" },
+    { title: "Now Playing", category: "now_playing" },
+    { title: "Top Rated", category: "top_rated" }
 ] as const;
+
 type Tab = typeof tabs[number];
 
 const Movie = ({findCard}:MovieProps) => {
@@ -30,11 +31,15 @@ const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 const [page,setPage] = useState<number>(1); 
 const [totalPage,setTotalPage] = useState<number|null>(null);
 
+const [activeTab,setActiveTab] = useState<Tab>(tabs[0]);
+
 const sentinelRef = useRef<HTMLDivElement|null>(null);  
-const [loadingMore, setLoadingMore] = useState(false)
+const [loadingMore, setLoadingMore] = useState(false);
+const [textEnding, setTextEnding] = useState<boolean>(false);
+
 useEffect(()=>{
     if(page>1) setLoadingMore(true);
-    getFilms("popular", page)
+    getFilms(activeTab.category, page)
     .then((data)=>{
         setTotalPage(data.total_pages)
         setDataFilm((old)=>
@@ -51,13 +56,14 @@ useEffect(()=>{
         setLoading(false);
         setLoadingMore(false);
     })
-},[page])
+},[page,activeTab])
 
 useEffect(()=> {
     const signal = new AbortController();
     setError(null);
     if (!findCard.trim()){
             setSearchCard(null);
+            setLoading(false);
             return
    }
    setLoading(true);
@@ -85,6 +91,11 @@ useEffect(()=> {
     }
     },[findCard]);
 
+useEffect(() => {
+    setPage(1);
+    setDataFilm([]);
+    setTotalPage(null);
+}, [activeTab]);
 
 useEffect(()=>{
     const el = sentinelRef.current
@@ -97,7 +108,7 @@ useEffect(()=>{
     const observer = new IntersectionObserver(([entry])=>{
         if (entry.isIntersecting){
             if( totalPage!==null && page >= totalPage  ){
-                "Страницы закончились. Дальше живут драконы"
+                setTextEnding(true);
                 return
             }
             else{
@@ -114,29 +125,13 @@ useEffect(()=>{
 },[totalPage, page, dataFilm.length, loading, loadingMore])
 
 
-const [activeTab,setActiveTab] = useState<Tab>(tabs[0]);
 
 
 const sortedFilms = useMemo(() => {
 
-        const result = (findCard&&searchCard ? [...searchCard] : findCard ? [ ] : [...dataFilm])
+        return (findCard&&searchCard ? [...searchCard] : findCard ? [ ] : [...dataFilm])
 
-        switch(activeTab){
-            case tabs[0]:
-                return result.sort((a,b) => b.popularity - a.popularity);
-            case tabs[1]:
-                return result.sort((a,b) => a.title.localeCompare(b.title, "ru"));
-            case tabs[2]:
-    
-                return result.sort((a,b) => b.vote_average - a.vote_average);
-            
-            case tabs[3]:
-            
-                return result.sort((a,b) => new Date(b.release_date).getTime() - new Date(a.release_date).getTime());
-            default:
-                return result;
-        }
-    }, [activeTab, dataFilm,searchCard, findCard]);
+}, [dataFilm,searchCard, findCard]);
 
 
 
@@ -145,43 +140,57 @@ if (error) return <div>Ошибка: {error}</div>;
 if (sortedFilms.length === 0) return <div>фильмы не найдены</div>;
 
   return (
-    <div>
-        <SectionHeading title="MOVIE" >
-                    <nav className={styles.tabs}>
-                        {tabs.map((tab) => ( 
-                            <button 
-                                key={tab}
-                                onClick={() => setActiveTab(tab)}
-                                className={tab === activeTab ? styles.tabActive : styles.tab}
-                                >
-                                    {tab}
-                                </button>
-                        ))}
-                    </nav>
-        </SectionHeading>
-      <div className={styles.movieCards}>
-            
+    <section className={styles.page}>
+        <div className={styles.container}>
+            <SectionHeading title="MOVIE" >
+                        <nav className={styles.tabs}>
+                            {tabs.map((tab) => ( 
+                                <button 
+                                    key={tab.category}
+                                    onClick={() => setActiveTab(tab)}
+                                    className={tab === activeTab ? styles.tabActive : styles.tab}
+                                    >
+                                        {tab.title}
+                                    </button>
+                            ))}
+                        </nav>
+            </SectionHeading>
+        <div className={styles.movieCards}>
                 
-            {sortedFilms.map((film,index)=>{
-                const isRef = (sortedFilms.length - 1  === index) 
-                
-                return (
-                
-                <div key={film.id} ref={isRef ? sentinelRef : null}> 
-               
-                <MovieCard
                     
-                    nameFilm={film.title} 
-                    img= {film.poster_path ? `https://image.tmdb.org/t/p/w500${film.poster_path}` : imgNoPoster}
-                    voteCount={film.popularity} 
-                    stars={film.vote_average} />
+                {sortedFilms.map((film,index)=>{
+                    const isRef = (sortedFilms.length - 1  === index) 
+                    
+                    return (
+                    
+                    <div key={film.id} ref={isRef ? sentinelRef : null}> 
+                
+                    <MovieCard
+                        
+                        nameFilm={film.title} 
+                        img= {film.poster_path ? `https://image.tmdb.org/t/p/w500${film.poster_path}` : imgNoPoster}
+                        voteCount={film.popularity} 
+                        stars={film.vote_average} />
+                    </div>
+                    )
+                })}
+                
+        </div>  
+        {loadingMore && (
+                <div className={styles.status}>
+                    <span className={styles.loader}></span>
+                    Загружаем ещё фильмы...
                 </div>
-                )
-            })}
-            
-      </div>  
-      {loadingMore && <div>Загружаю ещё...</div>}    
-    </div>
+            )}
+
+            {textEnding && (
+                <div className={styles.ending}>
+                    <span>✦</span>
+                    Вы посмотрели всё. Дальше живут драконы.
+                </div>
+            )}  
+        </div>
+    </section>
   )
 }
 
