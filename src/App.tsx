@@ -5,8 +5,8 @@ import Footer from './components/Footer/Footer'
 import MainContent from './pages/MainContent/MainContent'
 import { useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
-import SpotlightSection from './components/SpotlightSection/SpotlightSection'
 import Movie from './pages/Movie/Movie'
+
 
 
 function App() {

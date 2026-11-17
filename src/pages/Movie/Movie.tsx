@@ -36,11 +36,16 @@ const [activeTab,setActiveTab] = useState<Tab>(tabs[0]);
 const sentinelRef = useRef<HTMLDivElement|null>(null);  
 const [loadingMore, setLoadingMore] = useState(false);
 const [textEnding, setTextEnding] = useState<boolean>(false);
+const [searching, setSearching] = useState(false);
+
 
 useEffect(()=>{
     if(page>1) setLoadingMore(true);
+    setError(null)
+    let canceled = false;
     getFilms(activeTab.category, page)
     .then((data)=>{
+        if (canceled) return;
         setTotalPage(data.total_pages)
         setDataFilm((old)=>
             page ===1? 
@@ -49,13 +54,19 @@ useEffect(()=>{
         )
     })
     .catch((err)=>{
+        if (canceled) return;
         setError("Не удалось загрузить фильмы");
         console.error(err);
     })
     .finally(()=>{
+        if (canceled) return;
         setLoading(false);
         setLoadingMore(false);
     })
+
+    return ()=>{
+        canceled=true;
+    }
 },[page,activeTab])
 
 useEffect(()=> {
@@ -63,10 +74,10 @@ useEffect(()=> {
     setError(null);
     if (!findCard.trim()){
             setSearchCard(null);
-            setLoading(false);
+            setSearching(false);
             return
    }
-   setLoading(true);
+   setSearching(true);
 
    const timer = setTimeout(()=>{
     searchFilm(findCard,signal.signal)
@@ -80,7 +91,7 @@ useEffect(()=> {
     })
     .finally(()=>{
                  if (!signal.signal.aborted){
-                    setLoading(false);
+                    setSearching(false);
                 }
    })
     },500);
@@ -102,6 +113,7 @@ useEffect(()=>{
     if(!el){
         return
     }
+    if(findCard.trim()) return;
     if(loadingMore) return;
 
 
@@ -122,7 +134,7 @@ useEffect(()=>{
     return ()=>{
         observer.disconnect()
     }
-},[totalPage, page, dataFilm.length, loading, loadingMore])
+},[totalPage, page, dataFilm.length, loading, loadingMore, findCard])
 
 
 
@@ -135,19 +147,35 @@ const sortedFilms = useMemo(() => {
 
 
 
-if (loading) return <div>Загрузка фильмов...</div>;
-if (error) return <div>Ошибка: {error}</div>;
-if (sortedFilms.length === 0) return <div>фильмы не найдены</div>;
+    
 
   return (
     <section className={styles.page}>
+      
+
+        
+
         <div className={styles.container}>
+            {(loading || searching)  && ( 
+                <div className={styles.status}>
+                    <span className={styles.loader}></span>
+                    Загрузка фильмов...
+                </div>)}
+
+                {error && (
+                <div className={styles.error}>Ошибка: {error}</div>
+            )}
             <SectionHeading title="MOVIE" >
                         <nav className={styles.tabs}>
                             {tabs.map((tab) => ( 
                                 <button 
                                     key={tab.category}
-                                    onClick={() => setActiveTab(tab)}
+                                    onClick={() => {
+                                        if (tab === activeTab) return;
+                                        setLoading(true);
+                                        setTextEnding(false);
+                                        setPage(1);
+                                        setActiveTab(tab)}}
                                     className={tab === activeTab ? styles.tabActive : styles.tab}
                                     >
                                         {tab.title}
@@ -155,9 +183,14 @@ if (sortedFilms.length === 0) return <div>фильмы не найдены</div>
                             ))}
                         </nav>
             </SectionHeading>
+            {!loading && !searching && !error && sortedFilms.length === 0 && (
+                <div className={styles.filmCantFind}>
+                    Фильмы не найдены
+                </div>
+            )}
         <div className={styles.movieCards}>
                 
-                    
+                
                 {sortedFilms.map((film,index)=>{
                     const isRef = (sortedFilms.length - 1  === index) 
                     
