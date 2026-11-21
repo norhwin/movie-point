@@ -49,12 +49,20 @@
     gap: 40px 24px;
     justify-content: center;
     margin-top: 30px;
+
 }
 
 
 .movieCards > * {
     min-width: 0;
     animation: showFilm 0.4s ease;
+
+    
+}
+
+.movieCards a {
+    text-decoration: none;
+    color: inherit;
 }
 
 @keyframes showFilm {

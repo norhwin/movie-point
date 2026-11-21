@@ -3,7 +3,7 @@ import styles from "./Movie.module.css"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { getFilms, searchFilm, type MoviesFilm } from "../../data/filmsAPI"
 import SectionHeading from "../../components/SectionHeading/SectionHeading"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import imgNoPoster from "../../assets/images/poster.jpg"
 
 
@@ -26,8 +26,6 @@ const [searchCard,setSearchCard] = useState<MoviesFilm[] | null>(null);
 
 const [loading,setLoading] = useState(true);
 const [error,setError] = useState<string | null>(null)
-const navigate = useNavigate();
-const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 const [page,setPage] = useState<number>(1); 
 const [totalPage,setTotalPage] = useState<number|null>(null);
 
@@ -151,20 +149,7 @@ const sortedFilms = useMemo(() => {
 
   return (
     <section className={styles.page}>
-      
-
-        
-
         <div className={styles.container}>
-            {(loading || searching)  && ( 
-                <div className={styles.status}>
-                    <span className={styles.loader}></span>
-                    Загрузка фильмов...
-                </div>)}
-
-                {error && (
-                <div className={styles.error}>Ошибка: {error}</div>
-            )}
             <SectionHeading title="MOVIE" >
                         <nav className={styles.tabs}>
                             {tabs.map((tab) => ( 
@@ -183,6 +168,15 @@ const sortedFilms = useMemo(() => {
                             ))}
                         </nav>
             </SectionHeading>
+            {(loading || searching)  && ( 
+                <div className={styles.status}>
+                    <span className={styles.loader}></span>
+                    Загрузка фильмов...
+                </div>)}
+
+                {error && (
+                <div className={styles.error}>Ошибка: {error}</div>
+            )}
             {!loading && !searching && !error && sortedFilms.length === 0 && (
                 <div className={styles.filmCantFind}>
                     Фильмы не найдены
@@ -197,14 +191,16 @@ const sortedFilms = useMemo(() => {
                     return (
                     
                     <div key={film.id} ref={isRef ? sentinelRef : null}> 
-                
-                    <MovieCard
-                        
-                        nameFilm={film.title} 
-                        img= {film.poster_path ? `https://image.tmdb.org/t/p/w500${film.poster_path}` : imgNoPoster}
-                        voteCount={film.popularity} 
-                        stars={film.vote_average} />
+                    <Link to = {`/movie/${film.id}`}> 
+                        <MovieCard
+                            
+                            nameFilm={film.title} 
+                            img= {film.poster_path ? `https://image.tmdb.org/t/p/w500${film.poster_path}` : imgNoPoster}
+                            voteCount={film.popularity} 
+                            stars={film.vote_average} />
+                     </Link>
                     </div>
+                    
                     )
                 })}
                 

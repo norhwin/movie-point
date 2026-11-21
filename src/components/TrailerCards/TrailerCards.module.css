@@ -1,177 +1,183 @@
-.blockTrailer{
+.blockTrailer {
     display: flex;
+    width: 100%;
     max-width: 800px;
     gap: 10px;
-    
-
-
 }
 
-.bigCard{
+/* большая карточка */
+.bigCard {
     position: relative;
-    flex:1;
+    flex: 1;
     width: 650px;
+    min-width: 0;
     height: 275px;
     overflow: hidden;
-   
-
+    border-radius: 14px;
+    border: 1px solid #ffffff15;
+    box-shadow: 0 16px 40px #00000070;
 }
 
-.bigCard img{
+.bigCard img {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
-
+    transition: transform 0.6s ease;
 }
-.rightCards{
+
+.bigCard:hover img {
+    transform: scale(1.04);
+}
+
+/* лёгкое затемнение снизу, чтобы кнопка и подпись читались на любом кадре */
+.bigCard::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(to top, #0b152e99, transparent 55%);
+    pointer-events: none;
+}
+
+/* правая колонка */
+.rightCards {
     display: flex;
     flex-direction: column;
-    gap:15px;
+    gap: 15px;
     width: 170px;
-  
 }
 
-.smallCard{
+.smallCard {
+    position: relative;
     height: 130px;
     overflow: hidden;
     cursor: pointer;
-
+    border-radius: 12px;
+    border: 1px solid #ffffff15;
+    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.smallCard img{
-    object-fit: cover;
-    height: 100%;
-    width: 100%;
+.smallCard img {
     display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
 }
 
+/* при наведении: затемнение и значок play */
+.smallCard::after {
+    content: "▶";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 22px;
+    background: #0b152e8c;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.smallCard:hover {
+    border-color: #ff496f;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px #ff496f33;
+}
+
+.smallCard:hover img {
+    transform: scale(1.06);
+}
+
+.smallCard:hover::after {
+    opacity: 1;
+}
+
+/* панель с названием и стрелками (выезжает снизу) */
 .navigation {
     position: absolute;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 10px;
-    box-sizing: border-box;
     left: 0;
     bottom: 0;
+    z-index: 2;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 16px;
 
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
 
+    background: linear-gradient(to top, #0b152ef2 60%, #0b152e00);
     transform: translateY(100%);
     transition: transform 0.3s ease;
-
 }
 
-.bigCard:hover .navigation{
-    transform:translateY(0) ;
+.bigCard:hover .navigation {
+    transform: translateY(0);
 }
 
-.nameBig{
+.raiting {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.nameBig {
+    margin: 0;
     color: #fff;
+    font-size: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
+.btnNavigation {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
 }
 
 .btnNavigation button {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
+    width: 36px;
+    height: 36px;
+    color: #fff;
+    font-size: 18px;
     cursor: pointer;
-    font-size: 20px;
-    width: 35px;
-    height: 35px;
+    background: #ffffff1a;
+    border: 1px solid #ffffff30;
+    border-radius: 50%;
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
 }
 
-.raiting{
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    
+.btnNavigation button:hover {
+    background: #ff496f;
+    border-color: #ff496f;
+    transform: scale(1.08);
 }
 
-.stars {
-  color: #f9c74f;
-  letter-spacing: 2px;
-}
-
-
-.playBtn {
-    position: absolute;
-
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    width: 84px;
-    height: 84px;
-
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    padding: 0;
-    opacity: 0;
-    scale: 0.8;
-    transition: 
-        opacity 0.5s ease,
-        scale 0.5s ease;
-
-}
-
-.playCircle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 66px;
-  height: 66px;
-
-  border: 3px solid #f9c74f;
-  border-radius: 50%;
-
-  color: #c87510;
-  font-size: 27px;
- 
-}
-
-.rotatingArc {
-  position: absolute;
-  inset: 0;
-
-  border: 3px solid transparent;
-  border-top-color: #f9c74f;
-  border-radius: 50%;
-
-  opacity: 0;
-  transition: opacity 0.4s ease;
-
-  animation: rotateArc 4s linear infinite;
-  animation-play-state: paused;
-}
-
-
+/* рейтинг: звёзды в цвет сайта */
 .starsScore {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 8px;
     min-width: 0;
 }
 
 .starsAll {
     position: relative;
     display: inline-block;
-    font-size: 19px;
+    font-size: 17px;
     line-height: 1;
     letter-spacing: 1px;
     white-space: nowrap;
 }
 
 .starsGray {
-    color: #454b5c;
+    color: #ffffff2e;
 }
 
 .starsGold {
@@ -180,60 +186,105 @@
     left: 0;
     overflow: hidden;
     white-space: nowrap;
-    color: #ffc34d;
+    color: #ff496f;
 }
 
 .score {
-    font-size: 20px;
+    font-size: 17px;
     font-weight: 700;
-    color: #ffc34d;
+    color: #ff496f;
     white-space: nowrap;
 }
 
+/* кнопка play: как на странице фильма */
+.playBtn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 2;
+    transform: translate(-50%, -50%);
 
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-@keyframes rotateArc {
-  to {
-    transform: rotate(360deg);
-  }
+    width: 84px;
+    height: 84px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
 }
 
-.playBtn:hover .rotatingArc {
-  opacity: 1;
-  animation-play-state: running;
+.rotatingArc {
+    position: absolute;
+    inset: 9px;
+    border: 2px solid #ff496f;
+    border-radius: 50%;
+    animation: pulse 1.8s ease-out infinite;
 }
 
-.bigCard:hover .playBtn{
-    opacity: 1;
-    scale: 1;
+.playCircle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 66px;
+    height: 66px;
+    padding-left: 4px;
+    color: #fff;
+    font-size: 24px;
+    background: #ff496f;
+    border-radius: 50%;
+    box-shadow: 0 8px 24px #ff496f66;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-    
+.playBtn:hover .playCircle {
+    transform: scale(1.1);
+    box-shadow: 0 8px 32px #ff496faa;
+}
 
-@media (max-width: 700px){
-    .bigCard{
+@keyframes pulse {
+    from { transform: scale(1);   opacity: 0.7; }
+    to   { transform: scale(1.5); opacity: 0; }
+}
+
+@media (max-width: 700px) {
+    .blockTrailer {
+        max-width: 100%;
+    }
+
+    .bigCard {
+        flex: auto;
         width: 100%;
-        flex:auto;
-        overflow:visible;
-        
+        height: auto;
+        aspect-ratio: 16 / 9;
     }
-    .rightCards{
+
+    .rightCards {
         display: none;
-        
     }
 
-  
-    .navigation { 
+    /* на телефоне наведения нет, панель видна всегда */
+    .navigation {
         transform: translateY(0);
-        margin-bottom: -20px;
+    }
 
-        }
-    
+    .raiting {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
 }
 
-@media (hover: none) {
-    .playBtn {
-        opacity: 1;
-        scale: 1;
+@media (prefers-reduced-motion: reduce) {
+    .rotatingArc {
+        animation: none;
+    }
+
+    .bigCard img,
+    .smallCard img {
+        transition: none;
     }
 }

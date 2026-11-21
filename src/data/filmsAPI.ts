@@ -8,6 +8,7 @@ export type MoviesFilm = {
     popularity: number;
     poster_path: string | null;
     id:number;
+    backdrop_path: string | null;
    
     
 }
@@ -19,6 +20,18 @@ export type MoviesResponse  ={
     total_results:number;
    
 }
+
+export type MovieDetails = {
+    id: number;
+    title: string;
+    overview: string;
+    poster_path: string | null;
+    vote_average: number;
+    release_date: string;
+    runtime: number | null;
+    genres: { id: number; name: string }[];
+    backdrop_path: string | null;
+};
 
 export type MovieCategory =
     | "popular"
@@ -107,3 +120,21 @@ export async function getMovieVideos(movieId: number): Promise<MovieVideosRespon
     return responseData<MovieVideosResponse>(response)
  
 }
+
+export async function getMovieID(movieId: number): Promise<MovieDetails> {
+
+    if (!APIToken) {
+        throw new Error("APIToken не задан");
+    }
+
+    const params = new URLSearchParams();
+
+    params.set("language","ru-RU");
+    params.set("include_video_language", "ru,en,null");
+
+    const response = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?${params}`,{...options})
+
+    return responseData<MovieDetails>(response)
+ 
+}
+

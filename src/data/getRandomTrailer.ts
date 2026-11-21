@@ -12,7 +12,7 @@ function shuffle<T>(arr:T[]): T[]{
     return copy
 }
 
-function checkTrailers(condidats:MovieVideo[]): MovieVideo | undefined{
+export function checkTrailers(condidats:MovieVideo[]): MovieVideo | undefined{
     const youtube = condidats.filter(condidat => condidat.site === "YouTube");
 
     return (
@@ -33,7 +33,7 @@ export type TrailerItem = {
 
 export async function getRandomTrailer(count:number):Promise<TrailerItem[]> {
     const {results:movie} = await getFilms("popular",2);
-    const shuffleFilm = shuffle(movie.filter(v => v.poster_path)).slice(0,count * 2);
+    const shuffleFilm = shuffle(movie.filter(v => v.backdrop_path)).slice(0,count * 2);
     const witchTrailer = await Promise.all(
         shuffleFilm.map(async film =>
             {
@@ -56,7 +56,7 @@ export async function getRandomTrailer(count:number):Promise<TrailerItem[]> {
         id: film.id,
         name:film.title,
         stars: film.vote_average,
-        img: `https://image.tmdb.org/t/p/w780${film.poster_path}`,
+        img: `https://image.tmdb.org/t/p/w780${film.backdrop_path}`,
         key: trailer.key
     }));
     
