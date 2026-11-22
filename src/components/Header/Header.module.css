@@ -38,6 +38,7 @@ body{
   font-size: 20px;
   font-weight: 600;
   text-transform: uppercase;
+  color: #fff;
 }
 
 .headerRight {
@@ -74,9 +75,11 @@ body{
   font-size: 14px;
 }
 
+a {
+  text-decoration: none;
+}
 .nav a {
   color: #fff;
-  text-decoration: none;
 }
 
 .nav a:hover {

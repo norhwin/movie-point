@@ -58,6 +58,9 @@ const MoviePage = () => {
         };
     }, [id]);
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [id]);
 
     useEffect(()=>{
         let canceled = false;   

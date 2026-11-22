@@ -17,6 +17,7 @@ type MainContentProps = {
 }
 
 const MainContent = ({findCard}:MainContentProps) => {
+  
   const isSearching = findCard.trim() !== "";
 
   const [upcomingFilms,setUpcomingFilms] = useState<MoviesFilm[]>([]);
@@ -37,6 +38,10 @@ const MainContent = ({findCard}:MainContentProps) => {
     })
     
   },[]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+}, []);
 
   
   return (

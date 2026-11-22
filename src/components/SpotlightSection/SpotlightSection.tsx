@@ -4,7 +4,7 @@ import MovieCard from "../MovieCard/MovieCard.tsx";
 import { getFilms, searchFilm, type MoviesFilm } from "../../data/filmsAPI.ts"
 import SectionHeading from "../SectionHeading/SectionHeading.tsx";
 import imgNoPoster from "../../assets/images/default.png"
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 type SpotlightProps ={
@@ -219,13 +219,14 @@ const SpotlightSection = ({findCard}:SpotlightProps) => {
                                 }}>
                                     
                                         
-                                    
+                                   <Link to = {`/movie/${film.id}`}>
                                     <MovieCard 
                                         nameFilm={film.title} 
                                         img = {film.poster_path ? `https://image.tmdb.org/t/p/w500${film.poster_path}` : imgNoPoster}
                                         voteCount={film.popularity}
                                         stars={film.vote_average}
                                         />
+                                    </Link> 
                                 </div>
                             )})}
                         </div>

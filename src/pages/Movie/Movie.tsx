@@ -1,14 +1,44 @@
 import MovieCard from "../../components/MovieCard/MovieCard"
 import styles from "./Movie.module.css"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { getFilms, searchFilm, type MoviesFilm } from "../../data/filmsAPI"
 import SectionHeading from "../../components/SectionHeading/SectionHeading"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigationType} from "react-router-dom"
 import imgNoPoster from "../../assets/images/poster.jpg"
 
 
 type MovieProps ={
     findCard: string
+}
+
+type SavedState = {
+    category: string;
+    page: number;
+    totalPage: number | null;
+    dataFilm: MoviesFilm[];
+};
+
+const KEY = "movieListState";
+const KeyScroll = "movieScrollY";
+
+function saveState(state : SavedState){
+    try{
+        sessionStorage.setItem(KEY,JSON.stringify(state));
+    }
+    catch{
+        return 0;
+    }
+}
+
+function loadState(): SavedState|null {
+    try{
+        const raw = sessionStorage.getItem(KEY);
+        return raw ? (JSON.parse(raw) as SavedState) : null;
+    }
+    catch{
+        return null
+    }
+   
 }
 
 const tabs = [
@@ -21,20 +51,32 @@ const tabs = [
 type Tab = typeof tabs[number];
 
 const Movie = ({findCard}:MovieProps) => {
-const [dataFilm,setDataFilm] = useState<MoviesFilm[]>([])
+    
+const [savePage] = useState<SavedState | null>(loadState);
+const [dataFilm,setDataFilm] = useState<MoviesFilm[]>(savePage?.dataFilm ?? [])
 const [searchCard,setSearchCard] = useState<MoviesFilm[] | null>(null);
 
-const [loading,setLoading] = useState(true);
+const [loading,setLoading] = useState(savePage===null? true : false);
 const [error,setError] = useState<string | null>(null)
-const [page,setPage] = useState<number>(1); 
-const [totalPage,setTotalPage] = useState<number|null>(null);
+const [page,setPage] = useState<number>(savePage?.page ?? 1); 
+const [totalPage,setTotalPage] = useState<number|null>(savePage?.totalPage ?? null);
 
-const [activeTab,setActiveTab] = useState<Tab>(tabs[0]);
+const [activeTab,setActiveTab] = useState<Tab>(tabs.find(tab => tab.category === savePage?.category) ?? tabs[0]);
 
 const sentinelRef = useRef<HTMLDivElement|null>(null);  
 const [loadingMore, setLoadingMore] = useState(false);
 const [textEnding, setTextEnding] = useState<boolean>(false);
 const [searching, setSearching] = useState(false);
+const navType = useNavigationType();
+
+useLayoutEffect(() => {
+    if (navType === "POP") {
+        const raw = sessionStorage.getItem(KeyScroll)
+        window.scrollTo(0, Number(raw))
+    } else {
+        window.scrollTo(0, 0);
+    }
+}, []);
 
 
 useEffect(()=>{
@@ -45,11 +87,11 @@ useEffect(()=>{
     .then((data)=>{
         if (canceled) return;
         setTotalPage(data.total_pages)
-        setDataFilm((old)=>
-            page ===1? 
-            data.results
-            :[...old, ...data.results]
-        )
+        setDataFilm((old) =>
+        page === 1
+            ? data.results
+            : [...old, ...data.results.filter((n) => !old.some((o) => o.id === n.id))]
+        );
     })
     .catch((err)=>{
         if (canceled) return;
@@ -100,12 +142,6 @@ useEffect(()=> {
     }
     },[findCard]);
 
-useEffect(() => {
-    setPage(1);
-    setDataFilm([]);
-    setTotalPage(null);
-}, [activeTab]);
-
 useEffect(()=>{
     const el = sentinelRef.current
     if(!el){
@@ -135,7 +171,9 @@ useEffect(()=>{
 },[totalPage, page, dataFilm.length, loading, loadingMore, findCard])
 
 
-
+useEffect(() => {
+    saveState({page:page,totalPage:totalPage,category: activeTab.category,dataFilm:dataFilm});
+}, [page, totalPage, activeTab,dataFilm]);
 
 const sortedFilms = useMemo(() => {
 
@@ -160,7 +198,10 @@ const sortedFilms = useMemo(() => {
                                         setLoading(true);
                                         setTextEnding(false);
                                         setPage(1);
-                                        setActiveTab(tab)}}
+                                        setActiveTab(tab)
+                                        setDataFilm([])
+                                        setTotalPage(null)}
+                                    }
                                     className={tab === activeTab ? styles.tabActive : styles.tab}
                                     >
                                         {tab.title}
@@ -191,7 +232,10 @@ const sortedFilms = useMemo(() => {
                     return (
                     
                     <div key={film.id} ref={isRef ? sentinelRef : null}> 
-                    <Link to = {`/movie/${film.id}`}> 
+                    <Link to = {`/movie/${film.id}`} onClick={()=>{
+                        sessionStorage.setItem(KeyScroll, String(window.scrollY))
+                    }}> 
+                    
                         <MovieCard
                             
                             nameFilm={film.title} 

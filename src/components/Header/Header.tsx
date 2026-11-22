@@ -23,10 +23,12 @@ const Header = ({findText,setFindText}:HeaderProps) => {
       <header className={`${styles.headerBG} ${isSearching || !isHome ? styles.compact : ""}`} style={{'--bg-image' : `url(${bg})`} as React.CSSProperties}>
           <div className={styles.headerMain}>
             
-            <div className={styles.headerLeft}>
-              <img src={iconLogo} alt="icon" className={styles.headerIcon} />
-              <h1 className={styles.headerName}>Movie Point</h1>
-            </div>
+            <Link to = {"/"}>
+              <div className={styles.headerLeft}>
+                <img src={iconLogo} alt="icon" className={styles.headerIcon} />
+                <h1 className={styles.headerName}>Movie Point</h1>
+              </div>
+             </Link>
             <button className={styles.burger} onClick={() => setMenuOpen(!menuOpen)}>☰</button>
 
             <div className={styles.headerRight}>
