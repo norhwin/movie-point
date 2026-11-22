@@ -1,75 +1,101 @@
-# React + TypeScript + Vite
+# 🎬 Movie Point
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Учебный сайт о кино на **React + TypeScript**: каталог фильмов с бесконечной лентой, поиск, страницы фильмов и трейлеры. Данные берутся из API [TMDB](https://www.themoviedb.org/).
 
-Currently, two official plugins are available:
+Вёрстка сделана по мотивам шаблона киносайта, вся логика написана с нуля.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+<!--
+Добавь скриншоты в папку docs/ и раскомментируй:
 
-## React Compiler
+![Главная](./docs/home.png)
+![Каталог](./docs/catalog.png)
+![Страница фильма](./docs/movie.png)
+-->
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Возможности
 
-## Expanding the ESLint configuration
+### Главная страница
+- Блок **Spotlight** с фильмами, вкладками и кнопкой «Показать ещё»
+- Блок **трейлеров**: 3 случайных популярных фильма, у каждого автоматически находится трейлер на YouTube (запросы идут параллельно, фильмы без трейлера отсеиваются)
+- Новости, адаптивная шапка с бургер-меню
+- Поиск фильмов
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Каталог `/movie`
+- Вкладки по категориям TMDB: **Popular, Coming Soon, Now Playing, Top Rated**
+- **Бесконечная лента**: следующая страница подгружается при прокрутке
+- Поиск с задержкой ввода (debounce 500 мс) и отменой устаревших запросов
+- При возврате кнопкой «Назад» восстанавливаются вкладка, загруженный список и позиция прокрутки
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Страница фильма `/movie/:id`
+- Постер, название, год, длительность, рейтинг, жанры, описание
+- Фон из кадра фильма
+- Трейлер в модальном окне
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Модальное окно
+- Рендерится через портал в `document.body`
+- Закрывается по клику на фон и по клавише **Esc**
+- Блокирует прокрутку страницы, пока открыто
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Технологии
 
+- [React](https://react.dev/) и TypeScript
+- [Vite](https://vitejs.dev/)
+- [React Router](https://reactrouter.com/)
+- CSS Modules
+- [react-player](https://github.com/cookpete/react-player) для трейлеров
+- [TMDB API](https://developer.themoviedb.org/docs)
+
+## Запуск
+
+Нужен Node.js 18 или новее.
+
+```bash
+git clone https://github.com/norhwin/movie-point.git
+cd movie-point
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Получи токен TMDB: зарегистрируйся на [themoviedb.org](https://www.themoviedb.org/), в настройках аккаунта открой раздел API и скопируй **API Read Access Token**.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Создай в корне проекта файл `.env`:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```env
+VITE_TMDB_TOKEN=твой_токен
 ```
+
+Запусти проект:
+
+```bash
+npm run dev
+```
+
+Сайт откроется на `http://localhost:5173`. Файл `.env` добавлен в `.gitignore`, токен не попадёт в репозиторий.
+
+Другие команды:
+
+```bash
+npm run build     # сборка для продакшена
+npm run preview   # предпросмотр собранной версии
+```
+
+## Что интересного внутри
+
+- **Защита от гонок запросов.** Если быстро переключать вкладки или фильмы, ответ от устаревшего запроса не перезаписывает свежие данные (флаг `canceled` в cleanup эффектов).
+- **Поиск.** Debounce на таймере и `AbortController`, который отменяет предыдущий запрос.
+- **Бесконечная лента** на `IntersectionObserver`: следит за последней карточкой, не подгружает данные дважды, останавливается на последней странице и убирает дубли при дописывании списка.
+- **Состояние списка в `sessionStorage`**, ручное управление прокруткой (`history.scrollRestoration = "manual"`, `useNavigationType`, `useLayoutEffect`).
+- **Трейлеры.** Из ответа TMDB выбирается официальный трейлер на YouTube, запросы по нескольким фильмам идут через `Promise.all`, а ошибка одного запроса не ломает остальные.
+- **Типизация** ответов API: общие типы для фильмов, видео и деталей.
+
+## Ограничения и планы
+
+- [ ] Токен TMDB сейчас используется на клиенте и виден в браузере. Планируется прокси-сервер на FastAPI, чтобы спрятать токен.
+- [ ] Регистрация, вход и избранное (бэкенд и база данных)
+- [ ] Блок «Похожие фильмы» на странице фильма
+- [ ] Оптимизация длинной ленты (ленивая загрузка картинок)
+
+## Благодарности
+
+Этот проект использует API TMDB, но не одобрен и не сертифицирован TMDB.
+
+<img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" alt="TMDB" width="100" />
